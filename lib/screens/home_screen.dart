@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/physics.dart';
 import 'package:removable_trash/custom/cusom_icon.dart';
+import 'package:removable_trash/widgets/removable_action.dart';
 
 class HomeScreen extends StatefulWidget {
   HomeScreen({
@@ -8,15 +9,35 @@ class HomeScreen extends StatefulWidget {
     this.title,
   }) : super(key: key);
 
+  static _HomeScreenState? of(BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType<_Scope>()?.state;
+
   final String? title;
   @override
   _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _Scope extends InheritedWidget {
+  _Scope({
+    Key? key,
+    required Widget child,
+    required this.state,
+  }) : super(key: key, child: child);
+
+  final _HomeScreenState state;
+
+  @override
+  bool updateShouldNotify(covariant InheritedWidget oldWidget) {
+    return (oldWidget as _Scope).state != state;
+  }
 }
 
 class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   late AnimationController _controller;
 
   late Animation<Alignment> _draggableAnimation;
+
+  late Animation<double> _dragShaderAnimation;
 
   Alignment _dragAlignment = Alignment.center;
 
@@ -40,32 +61,44 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     });
   }
 
+  void checkValues(detail, int index, Size size) {
+    switch (detail.runtimeType) {
+      case DragUpdateDetails:
+        setPosition(detail, size);
+        break;
+      case DragDownDetails:
+        _controller.stop();
+        break;
+      case DragEndDetails:
+        _checkAnimation(detail, size);
+        break;
+    }
+  }
+
   void setPosition(DragUpdateDetails detail, Size size) {
-    print(_opacity);
     setState(() {
       _dragAlignment += Alignment(
         detail.delta.dx / (size.width / 3),
         detail.delta.dy / (size.height / 3),
       );
     });
-    setState(() {
-      if (_dragAlignment.x > 0.4) {
+    if (_dragAlignment.x >= 0 && _dragAlignment.y >= 0) {
+      if (_dragAlignment.x >= 0.5 && _dragAlignment.y >= 0.7) {
         if (_trashSize <= 18.0) {
-          _trashSize = _trashSize + _dragAlignment.x;
+          _trashSize = _trashSize + (_dragAlignment.x + _dragAlignment.y) / 2;
         }
-        if (_rectRadius > 0) {
-          _rectRadius = _rectRadius - 0.01;
-          if (_rectRadius <= 0.1) _opacity = 0;
-        }
-      } else if (_dragAlignment.x < 0.4 && _dragAlignment.x > 0) {
-        if (_trashSize > 12.0) {
-          _trashSize = _trashSize - _dragAlignment.x;
-        }
-        if (_rectRadius < 1) {
-          _rectRadius = _rectRadius + 0.01;
-        }
+        if (_rectRadius > 0.1)
+          _rectRadius -= (_dragAlignment.x + _dragAlignment.y) / 25;
+      } else {
+        _trashSize = 12;
+        _opacity = 1;
+        _rectRadius += (_dragAlignment.x + _dragAlignment.y) / 25;
       }
-    });
+    } else {
+      _trashSize = 12;
+      _opacity = 1;
+      _rectRadius = 1.0;
+    }
   }
 
   void _checkAnimation(DragEndDetails detail, Size size) {
@@ -97,51 +130,34 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       1,
       -unitVelocity,
     );
-
+    if (_rectRadius <= 0.1) {
+      setState(() {
+        _opacity = 0;
+      });
+    }
     _controller.animateWith(simulation);
   }
 
-  void _removeWidget() {}
-
   @override
   Widget build(BuildContext context) {
-    print(_dragAlignment);
     final size = MediaQuery.of(context).size;
+
     return Scaffold(
       body: Stack(
         children: [
-          Opacity(
-            opacity: _opacity,
-            child: Align(
+          _Scope(
+            state: this,
+            child: RemoveAciton(
+              isDrag: true,
+              animation: _controller,
+              index: 0,
+              opacity: _opacity,
+              radius: _rectRadius,
               alignment: _dragAlignment,
-              child: GestureDetector(
-                onPanUpdate: (detail) => setPosition(detail, size),
-                onPanEnd: (detail) => _checkAnimation(detail, size),
-                onPanDown: (detail) => _controller.stop(),
-                child: AnimatedBuilder(
-                  animation: _controller,
-                  builder: (context, child) {
-                    return ShaderMask(
-                      shaderCallback: (rect) => RadialGradient(
-                        radius: _rectRadius * 2,
-                        colors: [
-                          Colors.white,
-                          Colors.white,
-                          Colors.transparent,
-                          Colors.transparent
-                        ],
-                        stops: [0.0, 1.0, 0.0, 0.0],
-                        center: FractionalOffset(0.0, 0.0),
-                      ).createShader(rect),
-                      child: child,
-                    );
-                  },
-                  child: Container(
-                    height: 200.0,
-                    width: 200.0,
-                    color: Colors.blue,
-                  ),
-                ),
+              child: Container(
+                width: 200.0,
+                height: 200.0,
+                color: Colors.blue,
               ),
             ),
           ),
