@@ -35,39 +35,45 @@ abstract class RemovableToTrashAction extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    return Opacity(
-      opacity: opacity,
-      child: Align(
-        alignment: alignment,
-        child: GestureDetector(
-          onPanUpdate: !isDrag
-              ? null
-              : (detail) => handlerChangePosition(context, detail, index, size),
-          onPanDown: !isDrag
-              ? null
-              : (detail) => handlerChangePosition(context, detail, index, size),
-          onPanEnd: !isDrag
-              ? null
-              : (detail) => handlerChangePosition(context, detail, index, size),
-          child: AnimatedBuilder(
-            animation: animation,
-            builder: (context, child) {
-              return ShaderMask(
-                shaderCallback: (rect) => RadialGradient(
-                        radius: radius * 2.0,
-                        colors: [
-                          Colors.white,
-                          Colors.white,
-                          Colors.transparent,
-                          Colors.transparent,
-                        ],
-                        stops: [0.0, 1.0, 0.0, 1.0],
-                        center: FractionalOffset(0.0, 0.0))
-                    .createShader(rect),
-                child: child,
-              );
-            },
-            child: buildAction(context),
+    return IgnorePointer(
+      ignoring: !isDrag,
+      child: Opacity(
+        opacity: opacity,
+        child: Align(
+          alignment: alignment,
+          child: GestureDetector(
+            onPanUpdate: !isDrag
+                ? null
+                : (detail) =>
+                    handlerChangePosition(context, detail, index, size),
+            onPanDown: !isDrag
+                ? null
+                : (detail) =>
+                    handlerChangePosition(context, detail, index, size),
+            onPanEnd: !isDrag
+                ? null
+                : (detail) =>
+                    handlerChangePosition(context, detail, index, size),
+            child: AnimatedBuilder(
+              animation: animation,
+              builder: (context, child) {
+                return ShaderMask(
+                  shaderCallback: (rect) => RadialGradient(
+                          radius: radius * 2.0,
+                          colors: [
+                            Colors.white,
+                            Colors.white,
+                            Colors.transparent,
+                            Colors.transparent,
+                          ],
+                          stops: [0.0, 1.0, 0.0, 1.0],
+                          center: FractionalOffset(0.0, 0.0))
+                      .createShader(rect),
+                  child: child,
+                );
+              },
+              child: buildAction(context),
+            ),
           ),
         ),
       ),

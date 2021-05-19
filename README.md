@@ -1,10 +1,18 @@
 # removable_trash
 
-A new Flutter project.
+Just move the items you want to delete onto the trash can, now they've been deleted.
 
-|              App Home                |
-| :----------------------------------: | 
-| <a  target="_blank"><img src="https://user-images.githubusercontent.com/37551474/118799239-297c6700-b8a7-11eb-8802-b48606d7c759.gif" width="200"></a> |
+
+|              App Splash              |             App Home                 |
+| :----------------------------------: | :----------------------------------: | 
+| <a  target="_blank"><img src="https://user-images.githubusercontent.com/37551474/118799239-297c6700-b8a7-11eb-8802-b48606d7c759.gif" width="200"></a> | <a  target="_blank"><img src="https://user-images.githubusercontent.com/37551474/118810034-0e642400-b8b4-11eb-9cdf-e0400c8e3895.gif" width="200"></a>
+
+
+<a  target="_blank"><img src="https://user-images.githubusercontent.com/37551474/118813045-6c463b00-b8b7-11eb-92d0-422c61c540c8.gif" width="200"></a>
+
+
+
+
 
 ## Getting Started
 
