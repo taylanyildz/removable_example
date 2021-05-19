@@ -130,72 +130,44 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
     if (_rectRadius <= 0.1) {
       _opacity = 0;
-      print(children.length);
     }
     _controller.animateWith(simulation);
   }
 
-  var children = <Widget>[];
-
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    var children = <Widget>[
-      RemoveAciton(
-        isDrag: true,
-        animation: _controller,
-        index: 0,
-        opacity: _opacity,
-        radius: _rectRadius,
-        alignment: _dragAlignment,
-        child: Container(
-          width: 200.0,
-          height: 200.0,
-          color: Colors.blue,
-          child: Center(
-            child: Text(
-              'Page 1',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 30.0,
-              ),
-            ),
-          ),
-        ),
-      ),
-      Align(
-        heightFactor: 0.95,
-        child: RemoveAciton(
-          isDrag: false,
-          animation: _controller,
-          index: 1,
-          opacity: 1,
-          radius: 1,
-          alignment: Alignment.center,
-          child: Container(
-            width: 200.0,
-            height: 200.0,
-            color: Colors.red,
-            child: Center(
-              child: Text(
-                'Page 2',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 30.0,
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    ];
+
     return Scaffold(
       body: Stack(
         children: [
           _Scope(
             state: this,
             child: Stack(
-              children: children.reversed.toList(),
+              children: [
+                RemoveAciton(
+                  isDrag: true,
+                  animation: _controller,
+                  index: 0,
+                  opacity: _opacity,
+                  radius: _rectRadius,
+                  alignment: _dragAlignment,
+                  child: Container(
+                    width: 200.0,
+                    height: 200.0,
+                    color: Colors.blue,
+                    child: Center(
+                      child: Text(
+                        'Page 1',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 30.0,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ].reversed.toList(),
             ),
           ),
           Positioned(

@@ -4,7 +4,7 @@ A new Flutter project.
 
 |              App Home                |
 | :----------------------------------: | 
-| <a  target="_blank"><img src="removable_trash.gif" width="200"></a> |
+| <a  target="_blank"><img src="https://user-images.githubusercontent.com/37551474/118799239-297c6700-b8a7-11eb-8802-b48606d7c759.gif" width="200"></a> |
 
 ## Getting Started
 
