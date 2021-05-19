@@ -70,7 +70,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         _controller.stop();
         break;
       case DragEndDetails:
-        _checkAnimation(detail, size);
+        _checkAnimation(detail, size, index);
         break;
     }
   }
@@ -91,17 +91,15 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           _rectRadius -= (_dragAlignment.x + _dragAlignment.y) / 25;
       } else {
         _trashSize = 12;
-        _opacity = 1;
         _rectRadius += (_dragAlignment.x + _dragAlignment.y) / 25;
       }
     } else {
       _trashSize = 12;
-      _opacity = 1;
       _rectRadius = 1.0;
     }
   }
 
-  void _checkAnimation(DragEndDetails detail, Size size) {
+  void _checkAnimation(DragEndDetails detail, Size size, int index) {
     _draggableAnimation = _controller.drive(
       AlignmentTween(
         begin: _dragAlignment,
@@ -131,34 +129,73 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       -unitVelocity,
     );
     if (_rectRadius <= 0.1) {
-      setState(() {
-        _opacity = 0;
-      });
+      _opacity = 0;
+      print(children.length);
     }
     _controller.animateWith(simulation);
   }
 
+  var children = <Widget>[];
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-
+    var children = <Widget>[
+      RemoveAciton(
+        isDrag: true,
+        animation: _controller,
+        index: 0,
+        opacity: _opacity,
+        radius: _rectRadius,
+        alignment: _dragAlignment,
+        child: Container(
+          width: 200.0,
+          height: 200.0,
+          color: Colors.blue,
+          child: Center(
+            child: Text(
+              'Page 1',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 30.0,
+              ),
+            ),
+          ),
+        ),
+      ),
+      Align(
+        heightFactor: 0.95,
+        child: RemoveAciton(
+          isDrag: false,
+          animation: _controller,
+          index: 1,
+          opacity: 1,
+          radius: 1,
+          alignment: Alignment.center,
+          child: Container(
+            width: 200.0,
+            height: 200.0,
+            color: Colors.red,
+            child: Center(
+              child: Text(
+                'Page 2',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 30.0,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    ];
     return Scaffold(
       body: Stack(
         children: [
           _Scope(
             state: this,
-            child: RemoveAciton(
-              isDrag: true,
-              animation: _controller,
-              index: 0,
-              opacity: _opacity,
-              radius: _rectRadius,
-              alignment: _dragAlignment,
-              child: Container(
-                width: 200.0,
-                height: 200.0,
-                color: Colors.blue,
-              ),
+            child: Stack(
+              children: children.reversed.toList(),
             ),
           ),
           Positioned(
